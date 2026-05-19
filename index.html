@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilote - Pilotage de chantier pour architectes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #2d46b9;
+  --primary-light: #edf0ff;
+  --primary-muted: #a8b8f0;
+  --text: #0f172a;
+  --text-2: #374151;
+  --text-3: #64748b;
+  --text-4: #94a3b8;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #f1f5f9;
+  --border: #e2e8f0;
+  --danger-bg: #fef2f2;
+  --danger-text: #991b1b;
+  --warning-bg: #fffbeb;
+  --warning-text: #92400e;
+  --warning-border: #fcd34d;
+  --success-bg: #ecfdf5;
+  --success-text: #065f46;
+  --success-border: #6ee7b7;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 400;
+  background: var(--surface);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 20px; font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+}
+.nav-cta {
+  background: var(--primary); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 8px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  display: inline-block;
+}
+.nav-cta:hover { background: #2440a8; }
+
+main { padding-top: 56px; }
+
+/* HERO */
+.hero {
+  max-width: 860px; margin: 0 auto;
+  padding: 88px 48px 72px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 56px; align-items: center;
+}
+.hero-tag {
+  display: inline-block;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--primary);
+  background: var(--primary-light);
+  padding: 5px 12px; border-radius: 999px;
+  margin-bottom: 24px;
+}
+.hero-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 42px; line-height: 1.1;
+  letter-spacing: -0.02em; color: var(--text);
+  margin-bottom: 18px;
+}
+.hero-title em { font-style: italic; color: var(--primary); }
+.hero-sub {
+  font-size: 16px; line-height: 1.65;
+  color: var(--text-2); margin-bottom: 32px;
+}
+.hero-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: 10px;
+  padding: 13px 24px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-primary:hover { background: #2440a8; transform: translateY(-1px); }
+.btn-primary svg { width: 15px; height: 15px; opacity: 0.75; }
+.hero-note { font-size: 12px; color: var(--text-3); }
+
+/* HERO MOCKUP */
+.hero-screen {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 4px 28px rgba(45,70,185,0.09);
+}
+.hs-topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hs-title { font-size: 12px; font-weight: 500; color: var(--text); }
+.hs-date { font-size: 11px; color: var(--text-3); }
+.hs-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.hs-lot {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-3);
+  padding: 4px 2px 2px;
+}
+.hs-task {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 12px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.hs-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.dot-ok { background: #10b981; }
+.dot-warn { background: #f59e0b; }
+.dot-late { background: #ef4444; }
+.hs-task-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.hs-task-meta { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.hs-alert {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: 8px; padding: 8px 12px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.hs-alert-text { font-size: 11px; color: var(--warning-text); line-height: 1.45; }
+.hs-alert-text strong { font-weight: 500; }
+.hs-alert-cta {
+  display: inline-block; margin-top: 6px;
+  font-size: 11px; font-weight: 500;
+  color: var(--warning-text);
+  border: 1px solid var(--warning-border);
+  border-radius: 5px; padding: 3px 8px;
+  cursor: default;
+  background: rgba(255,255,255,0.5);
+}
+
+/* VERBATIM */
+.verbatim-section {
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 48px;
+}
+.verbatim-inner {
+  max-width: 860px; margin: 0 auto;
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.verbatim-bar {
+  width: 3px; flex-shrink: 0;
+  background: var(--primary); border-radius: 2px;
+  align-self: stretch; min-height: 40px;
+}
+.verbatim-text {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic; font-size: 19px; line-height: 1.55;
+  color: var(--text); margin-bottom: 10px;
+}
+.verbatim-author { font-size: 12px; color: var(--text-3); }
+
+/* FEATURES */
+.features-section { max-width: 860px; margin: 0 auto; padding: 80px 48px; }
+.section-eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 28px; line-height: 1.2; color: var(--text); margin-bottom: 48px;
+}
+
+.feature-block {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 52px; align-items: center;
+  margin-bottom: 72px;
+}
+.feature-block:last-child { margin-bottom: 0; }
+.feature-block.reverse .fb-text { order: 2; }
+.feature-block.reverse .fb-mockup { order: 1; }
+
+.fb-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--primary); margin-bottom: 10px;
+}
+.fb-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 22px; line-height: 1.2; color: var(--text); margin-bottom: 10px;
+}
+.fb-desc { font-size: 14px; color: var(--text-2); line-height: 1.65; }
+
+/* MOCKUP shell */
+.mockup {
+  background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(15,23,42,0.06);
+}
+.mockup-bar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 9px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mockup-bar-title { font-size: 11px; font-weight: 500; color: var(--text); }
+.mockup-bar-sub { font-size: 10px; color: var(--text-3); }
+.mockup-body { padding: 12px; }
+
+/* Mockup 1 - Tache + CCTP */
+.tache-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px;
+}
+.tache-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.badge-lot {
+  font-size: 10px; font-weight: 500;
+  background: var(--surface-3); color: var(--text-3);
+  padding: 3px 8px; border-radius: 999px;
+}
+.badge-status {
+  font-size: 10px; font-weight: 500;
+  background: var(--warning-bg); color: var(--warning-text);
+  padding: 3px 8px; border-radius: 999px;
+  border: 1px solid var(--warning-border);
+}
+.tache-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.tache-dates { font-size: 11px; color: var(--text-3); margin-bottom: 12px; }
+.divider { height: 1px; background: var(--border); margin-bottom: 10px; }
+.cctp-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-4); margin-bottom: 7px;
+}
+.cctp-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  background: var(--primary-light); border-radius: 6px;
+  padding: 7px 10px; margin-bottom: 5px;
+}
+.cctp-num {
+  font-size: 10px; font-weight: 500; color: var(--primary);
+  flex-shrink: 0; font-family: monospace;
+}
+.cctp-text { font-size: 11px; color: var(--text-2); line-height: 1.4; }
+
+/* Mockup 2 - Alertes */
+.alert-item {
+  background: var(--warning-bg); border: 1px solid var(--warning-border);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.alert-item:last-child { margin-bottom: 0; }
+.ai-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.ai-title { font-size: 12px; font-weight: 500; color: var(--warning-text); margin-bottom: 2px; }
+.ai-desc { font-size: 11px; color: var(--warning-text); opacity: 0.8; line-height: 1.45; }
+
+/* Mockup 3 - Documents */
+.doc-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 11px 12px; margin-bottom: 7px;
+  display: flex; gap: 11px; align-items: flex-start;
+}
+.doc-item:last-child { margin-bottom: 0; }
+.doc-icon {
+  width: 32px; height: 38px; flex-shrink: 0;
+  background: var(--surface-3); border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+.doc-icon svg { width: 14px; height: 14px; color: var(--text-3); }
+.doc-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.doc-meta { font-size: 11px; color: var(--text-3); margin-bottom: 5px; }
+.doc-badge {
+  font-size: 10px; font-weight: 500;
+  padding: 2px 7px; border-radius: 999px;
+  display: inline-block;
+}
+.db-warn { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+.db-ok { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+
+/* Boutons d'action dans les mockups */
+.mock-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px; font-weight: 500;
+  cursor: default;
+  white-space: nowrap;
+}
+.mock-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
+.mock-btn-primary {
+  background: var(--primary); color: #fff;
+  border-color: var(--primary);
+}
+.mock-btn-warn {
+  background: var(--warning-bg); color: var(--warning-text);
+  border-color: var(--warning-border);
+}
+.mock-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* CTA FINAL */
+.cta-section { background: var(--primary); padding: 80px 48px; text-align: center; }
+.cta-inner { max-width: 860px; margin: 0 auto; }
+.cta-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 34px; line-height: 1.15; color: #fff; margin-bottom: 14px;
+}
+.cta-desc {
+  font-size: 15px; color: rgba(255,255,255,0.72);
+  line-height: 1.65; margin-bottom: 32px;
+}
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: var(--primary);
+  border: none; border-radius: 10px;
+  padding: 14px 30px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.cta-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.cta-btn svg { width: 15px; height: 15px; opacity: 0.6; }
+.cta-small { display: block; margin-top: 14px; font-size: 12px; color: rgba(255,255,255,0.45); }
+
+/* Email input CTA */
+.cta-form { margin-bottom: 14px; }
+.cta-input-row {
+  display: flex; gap: 8px; justify-content: center;
+  flex-wrap: wrap;
+}
+.cta-email-input {
+  width: 280px; height: 46px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 0 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: #fff;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cta-email-input::placeholder { color: rgba(255,255,255,0.45); }
+.cta-email-input:focus {
+  border-color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.18);
+}
+.cta-submit-btn {
+  height: 46px;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: var(--primary);
+  border: none; border-radius: 10px;
+  padding: 0 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.cta-submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.cta-submit-btn svg { width: 14px; height: 14px; opacity: 0.6; }
+.cta-error {
+  font-size: 12px; color: rgba(255,180,180,0.9);
+  margin-top: 8px; display: none;
+}
+.cta-error.visible { display: block; }
+.cta-success {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  color: #fff; font-size: 15px; font-weight: 500;
+  margin-bottom: 14px;
+  animation: fadeUp 0.3s ease both;
+}
+.cta-success svg { color: #6ee7b7; flex-shrink: 0; }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border); padding: 22px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-logo { font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; color: var(--primary); }
+.footer-note { font-size: 12px; color: var(--text-3); }
+
+/* ANIMS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-tag   { animation: fadeUp 0.4s ease both; }
+.hero-title { animation: fadeUp 0.4s 0.07s ease both; }
+.hero-sub   { animation: fadeUp 0.4s 0.14s ease both; }
+.hero-actions { animation: fadeUp 0.4s 0.2s ease both; }
+.hero-screen { animation: fadeUp 0.5s 0.12s ease both; }
+
+@media (max-width: 700px) {
+  nav { padding: 0 20px; }
+  .hero { grid-template-columns: 1fr; padding: 68px 24px 52px; gap: 32px; }
+  .verbatim-section { padding: 40px 24px; }
+  .features-section { padding: 60px 24px; }
+  .feature-block { grid-template-columns: 1fr; gap: 24px; }
+  .feature-block.reverse .fb-text { order: 0; }
+  .feature-block.reverse .fb-mockup { order: 0; }
+  .who-section { padding: 60px 24px; }
+  .who-grid { grid-template-columns: 1fr; }
+  .cta-section { padding: 60px 24px; }
+  footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+    </svg>
+    <span>Pilote</span>
+  </div>
+  <a href="https://tally.so/r/EkZVzq" target="_blank" class="nav-cta">Demander l'accès bêta</a>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-tag">Pour les missions OPC et DET</div>
+    <h1 class="hero-title">
+      Ne jamais se faire<br>
+      <em>surprendre sur le chantier.</em>
+    </h1>
+    <p class="hero-sub">
+      Pilote relie votre planning, vos CCTP et vos documents EXE en une feuille de route lisible en 5 minutes dans le train avant votre visite de chantier.
+    </p>
+    <div class="hero-actions">
+      <a href="https://tally.so/r/EkZVzq" target="_blank" class="btn-primary">
+        Demander l'accès bêta
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+      <span class="hero-note">Essai gratuit sur un chantier complet</span>
+    </div>
+  </div>
+
+  <div class="hero-screen">
+    <div class="hs-topbar">
+      <span class="hs-title">Journal OPC</span>
+      <span class="hs-date">Mardi 19 mai</span>
+    </div>
+    <div class="hs-body">
+      <div class="hs-alert">
+        <div class="hs-alert-text"><strong>Lot 05 Menuiseries ext.</strong> Délai de commande dépassé. Pose dans 6 semaines.
+          <span class="hs-alert-cta">Relancer l'entreprise</span>
+        </div>
+      </div>
+      <div class="hs-lot">Lot 02 - Gros oeuvre</div>
+      <div class="hs-task">
+        <div class="hs-dot dot-ok"></div>
+        <div>
+          <div class="hs-task-name">Confortement des poutres bois</div>
+          <div class="hs-task-meta">En cours - bâtiment C, RDC</div>
+        </div>
+      </div>
+      <div class="hs-task">
+        <div class="hs-dot dot-warn"></div>
+        <div>
+          <div class="hs-task-name">Rebouchage trémies</div>
+          <div class="hs-task-meta">Visa en attente - EXE-02-B</div>
+        </div>
+      </div>
+      <div class="hs-lot">Lot 04 - Charpente</div>
+      <div class="hs-task">
+        <div class="hs-dot dot-late"></div>
+        <div>
+          <div class="hs-task-name">Pose fermettes</div>
+          <div class="hs-task-meta">Retard 5 jours - à relancer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VERBATIM -->
+<div class="verbatim-section">
+  <div class="verbatim-inner">
+    <div class="verbatim-bar"></div>
+    <div>
+      <p class="verbatim-text">
+        "À chaque fois qu'un artisan me pose une question, je dois aller chercher dans 5 endroits différents. Ce qu'il me faut, c'est tout ça au même endroit, contextualisé à mon projet."
+      </p>
+      <p class="verbatim-author">Architecte chef de projet, 10 ans d'expérience, 3 chantiers actifs</p>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="section-eyebrow">Ce que fait Pilote</div>
+  <h2 class="section-title">Tout ce qu'il faut savoir avant d'arriver sur site</h2>
+
+  <!-- 1. Planning + CCTP -->
+  <div class="feature-block">
+    <div class="fb-text">
+      <div class="fb-label">Planning contextualisé</div>
+      <h3 class="fb-title">Chaque tâche reliée à son CCTP</h3>
+      <p class="fb-desc">
+        "Confortement des poutres" ne veut rien dire seul. Pilote relie chaque tâche aux articles CCTP correspondants. Vous savez exactement de quoi il s'agit dans votre projet, quelle entreprise et à quelle révision.
+      </p>
+    </div>
+    <div class="fb-mockup">
+      <div class="mockup">
+        <div class="mockup-bar">
+          <span class="mockup-bar-title">Confortement des poutres bois</span>
+          <span class="mockup-bar-sub">Lot 02</span>
+        </div>
+        <div class="mockup-body">
+          <div class="tache-card">
+            <div class="tache-header">
+              <span class="badge-lot">Lot 02 - Gros oeuvre</span>
+              <span class="badge-status">En cours</span>
+            </div>
+            <div class="tache-name">Confortement des poutres bois</div>
+            <div class="tache-dates">19 mai - 6 juin 2026 / Bâtiment C, RDC</div>
+            <div class="divider"></div>
+            <div class="cctp-label">Articles CCTP associés</div>
+            <div class="cctp-item">
+              <span class="cctp-num">02.10.3.2</span>
+              <span class="cctp-text">Renforcement poutres existantes par cerclage acier</span>
+            </div>
+            <div class="cctp-item">
+              <span class="cctp-num">02.10.3.3</span>
+              <span class="cctp-text">Traitement des bois - produit fongicide classe 4</span>
+            </div>
+            <div class="mock-actions">
+              <span class="mock-btn mock-btn-primary">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H3v12h10V2z"/><path d="M5 6h6M5 9h4"/></svg>
+                Rédiger un OS
+              </span>
+              <span class="mock-btn">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg>
+                Saisir l'avancement
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Alertes -->
+  <div class="feature-block reverse">
+    <div class="fb-text">
+      <div class="fb-label">Alertes automatiques</div>
+      <h3 class="fb-title">Les délais cachés détectés avant qu'il soit trop tard</h3>
+      <p class="fb-desc">
+        Menuiseries à commander 3 mois avant la pose, visa à délivrer avant démarrage, tâche bloquante non résolue. Pilote détecte ce qui ne se voit pas dans un planning Gantt classique.
+      </p>
+    </div>
+    <div class="fb-mockup">
+      <div class="mockup">
+        <div class="mockup-bar">
+          <span class="mockup-bar-title">Alertes actives</span>
+          <span class="mockup-bar-sub">3 points d'attention</span>
+        </div>
+        <div class="mockup-body">
+          <div class="alert-item">
+            <div class="ai-icon">&#9888;</div>
+            <div style="flex:1;">
+              <div class="ai-title">Délai de commande dépassé</div>
+              <div class="ai-desc">Menuiseries ext. (Lot 05) - pose dans 6 semaines, commande non confirmée.</div>
+              <div class="mock-actions">
+                <span class="mock-btn mock-btn-warn">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h12v9H2zM2 4l6 5 6-5"/></svg>
+                  Relancer l'entreprise
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="ai-icon">&#9888;</div>
+            <div style="flex:1;">
+              <div class="ai-title">Visa manquant avant démarrage</div>
+              <div class="ai-desc">Plan EXE-02-B (ferraillage) - béton prévu le 26 mai.</div>
+              <div class="mock-actions">
+                <span class="mock-btn mock-btn-primary">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12l3-3 2 2 5-5 2 2"/></svg>
+                  Viser le document
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="ai-icon">&#9888;</div>
+            <div style="flex:1;">
+              <div class="ai-title">Tâche bloquante en retard</div>
+              <div class="ai-desc">Rebouchage trémies - bloque le démarrage Lot 04 Charpente.</div>
+              <div class="mock-actions">
+                <span class="mock-btn mock-btn-warn">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg>
+                  Noter un point de chantier
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Documents -->
+  <div class="feature-block">
+    <div class="fb-text">
+      <div class="fb-label">Documents et visas</div>
+      <h3 class="fb-title">Plans et visas accessibles depuis chaque tâche</h3>
+      <p class="fb-desc">
+        Plus besoin d'ouvrir Drive ou Acrobat sur chantier. Les plans EXE et leur statut de visa sont visibles depuis chaque tâche, en quelques secondes.
+      </p>
+    </div>
+    <div class="fb-mockup">
+      <div class="mockup">
+        <div class="mockup-bar">
+          <span class="mockup-bar-title">Documents EXE</span>
+          <span class="mockup-bar-sub">Lot 02 - 3 documents</span>
+        </div>
+        <div class="mockup-body">
+          <div class="doc-item">
+            <div class="doc-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l3 3v9H4V2z"/><path d="M10 2v3h3M6 8h5M6 11h3"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div class="doc-name">Plan ferraillage rampant - ind. B</div>
+              <div class="doc-meta">EXE-02-B - màj le 12 mai</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:5px;">
+                <span class="doc-badge db-warn">Visa en attente</span>
+                <span class="mock-btn mock-btn-primary" style="padding:3px 8px;font-size:10px;">Viser</span>
+              </div>
+            </div>
+          </div>
+          <div class="doc-item">
+            <div class="doc-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l3 3v9H4V2z"/><path d="M10 2v3h3M6 8h5M6 11h3"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div class="doc-name">Coupe murs porteurs - ind. C</div>
+              <div class="doc-meta">EXE-02-C - màj le 3 mai</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:5px;">
+                <span class="doc-badge db-ok">Visé BET</span>
+                <span class="mock-btn" style="padding:3px 8px;font-size:10px;">Ouvrir le plan</span>
+              </div>
+            </div>
+          </div>
+          <div class="doc-item">
+            <div class="doc-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l3 3v9H4V2z"/><path d="M10 2v3h3M6 8h5M6 11h3"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div class="doc-name">Détail reprise sous-oeuvre - ind. A</div>
+              <div class="doc-meta">EXE-02-A - màj le 28 avr.</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:5px;">
+                <span class="doc-badge db-ok">Visé archi</span>
+                <span class="mock-btn" style="padding:3px 8px;font-size:10px;">Ouvrir le plan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- CTA FINAL -->
+<section class="cta-section" id="cta">
+  <div class="cta-inner">
+    <h2 class="cta-title">Testez sur votre prochain chantier</h2>
+    <p class="cta-desc">
+      Accès bêta ouvert aux agences OPC/DET en France.<br>
+      Import de votre planning OmniPlan inclus dès le premier jour.
+    </p>
+
+    <a href="https://tally.so/r/EkZVzq" target="_blank" class="cta-btn">
+      Demander l'accès bêta
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+    </a>
+
+    <span class="cta-small">Essai gratuit - 1 chantier complet - sans engagement</span>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-logo" style="display:flex;align-items:center;gap:6px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+    </svg>
+    <span>Pilote</span>
+  </div>
+  <div class="footer-note">SaaS B2B - Architectes OPC / DET - France</div>
+</footer>
+
+
+</body>
+</html>
